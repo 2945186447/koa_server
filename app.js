@@ -8,6 +8,10 @@ const logger = require('koa-logger')
 const winston = require('winston');
 const { format } = require('date-fns');  // 引入 date-fns 用来格式化时间
 const dotenv = require('dotenv');
+const swaggerUi = require('koa2-swagger-ui');
+const path = require('path');
+const fs = request = require('fs');
+
 const index = require('./routes/index')
 const users = require('./routes/users')
 const environment = process.env.NODE_ENV || 'production';
@@ -50,6 +54,37 @@ if (environment === 'production') {
     loggerInstance.info(str.replace(/\u001b\[[0-9;]*m/g, '')); // 去掉颜色转义字符
   }));
 }
+
+// 暴露静态文件夹
+app.use(require('koa-static')(__dirname + '/swigger'))
+app.use(async (ctx, next) => {
+  if (ctx.path === '/swagger.json') {
+    const swaggerFilePath = path.join(__dirname, 'swigger', 'swigger.json');
+    console.log(`swagger.json path: ${swaggerFilePath}`); // 输出路径
+    try {
+      // 使用 fs.readFileSync 读取文件内容
+      const swaggerFileContent = fs.readFileSync(swaggerFilePath, 'utf8');
+      ctx.type = 'json';
+      ctx.body = JSON.parse(swaggerFileContent); // 解析 JSON 内容并返回
+    } catch (err) {
+      ctx.status = 404;
+      ctx.body = { message: "swigger.json not found or unable to read" };
+      console.error(err); // 输出错误信息
+    }
+  } else {
+    await next();
+  }
+});
+
+// 使用 koa-swagger-ui 提供 Swagger UI
+app.use(swaggerUi.koaSwagger({
+  routePrefix: '/swagger',   // Swagger UI 的路由路径
+  swaggerOptions: {
+    url: '/swagger.json',     // Swagger JSON 的路径
+  },
+}));
+
+
 app.use(require('koa-static')(__dirname + '/public'))
 
 app.use(views(__dirname + '/views', {
