@@ -6,21 +6,19 @@ import bodyparser from 'koa-bodyparser';
 import logger from 'koa-logger';
 import winston from 'winston';
 import { format } from 'date-fns';  // 引入 date-fns 用来格式化时间
-import dotenv from 'dotenv';
+import { loadProcessEnv } from "./utils/dotenv.js"
 import swaggerUi from 'koa2-swagger-ui';
 import path from 'path';
 import fs from 'fs';
 import koaStatic from 'koa-static';
-
-
 import index from './routes/index.js';
 import users from './routes/users.js';
 
+
+
 // 获取当前模块的目录
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
-const environment = process.env.NODE_ENV || 'production';
-// 读取不同环境的配置
-dotenv.config({ path: `.env.${environment}` });
+loadProcessEnv()
 
 // 创建 Koa 应用
 const app = new Koa();
@@ -35,7 +33,7 @@ app.use(bodyparser({
 app.use(json());
 
 // 创建 koa-logger 中间件，将日志输出到 winston
-if (environment === 'production') {
+if (process.env.environment === 'production') {
   // 创建自定义的 winston 日志格式，使用 date-fns 格式化时间戳
   const loggerInstance = winston.createLogger({
     level: 'info',
@@ -67,7 +65,7 @@ if (environment === 'production') {
 }
 
 // swagger
-if (environment === 'development') {
+if (process.env.environment === 'development') {
   // 暴露静态文件夹
   app.use(koaStatic(__dirname + '/swigger'));
   app.use(async (ctx, next) => {
@@ -103,6 +101,7 @@ app.use(koaStatic(__dirname + '/public'));
 app.use(views(__dirname + '/views', {
   extension: 'ejs'
 }));
+
 
 // logger
 app.use(async (ctx, next) => {
