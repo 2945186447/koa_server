@@ -14,8 +14,6 @@ import koaStatic from 'koa-static';
 import index from './routes/index.js';
 import users from './routes/users.js';
 
-
-
 // 获取当前模块的目录
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 loadProcessEnv()
