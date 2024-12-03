@@ -1,10 +1,12 @@
+import { required } from 'joi';
 import { mongoose } from '../db/index.js';
 
 const userSchema = new mongoose.Schema(
     {
 
-        name: { type: String, required: true },
-        age: { type: Number, required: true, min: 0 },
+        username: { type: String, required: true },
+        password: { type: String, required: true },
+        gender: { type: Number, required: true },
     },
     {
         autoCreate: true,

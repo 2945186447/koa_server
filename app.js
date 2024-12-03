@@ -11,8 +11,15 @@ import swaggerUi from 'koa2-swagger-ui';
 import path from 'path';
 import fs from 'fs';
 import koaStatic from 'koa-static';
+import koaJwt from "koa-jwt"
+import { getRedisClient } from './utils/redis.js';
+import { jwtExcludePaths, tokenHandler } from './utils/jwt.js'
+
+
+
 import index from './routes/index.js';
 import users from './routes/users.js';
+import tools from './routes/tools.js';
 
 // 获取当前模块的目录
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
@@ -93,6 +100,10 @@ if (process.env.environment === 'development') {
     },
   }));
 }
+//redis
+const client = getRedisClient();
+// mongodb
+import { mongoose } from "./db/index.js";
 
 app.use(koaStatic(__dirname + '/public'));
 
@@ -109,7 +120,13 @@ app.use(async (ctx, next) => {
   console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
 });
 
+// 对没有验签通过返回的错误进行拦截处理
+app.use(tokenHandler);
+// unless 某些特殊接口不验证toekn 比如登录
+app.use(koaJwt({ secret: process.env.SECRET_KEY }).unless({ path: jwtExcludePaths }));
+
 // routes
+app.use(tools.routes(), tools.allowedMethods());
 app.use(index.routes(), index.allowedMethods());
 app.use(users.routes(), users.allowedMethods());
 

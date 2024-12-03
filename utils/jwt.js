@@ -1,7 +1,38 @@
 import jwt from 'jsonwebtoken';
 import { loadProcessEnv } from "../utils/dotenv.js";
+
 loadProcessEnv();
 const SECRET_KEY = process.env.SECRET_KEY;
+
+export const jwtExcludePaths = [
+    /^\/tools\/.*$/,
+    '/users/login'
+];
+
+export async function tokenHandler(ctx, next) {
+    try {
+        await next(); // 继续执行请求处理
+    } catch (err) {
+        if (err.status === 401) {
+            // 如果是未认证错误（401），则返回自定义错误消息
+            ctx.status = 401;
+            console.log(ctx.request.header.authorization);
+            console.log(jwtDecrypt(ctx.request.header.authorization));
+
+            return ctx.body = {
+                data: null,
+                message: "unauthorized"
+            };
+        } else {
+            return ctx.body = {
+                data: null,
+                message: err.message
+            };
+        }
+    }
+
+}
+
 // 加密函数：生成 JWT
 export function jwtEncrypt(payload) {
     return jwt.sign(payload, SECRET_KEY, { expiresIn: process.env.JWT_EXPIRES_IN });
@@ -17,3 +48,4 @@ export function jwtDecrypt(token) {
         return { error: 'Invalid token or token expired' };
     }
 }
+
