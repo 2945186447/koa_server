@@ -7,7 +7,7 @@ router.prefix(prefix)
 import User from '../models/user.js'
 
 router.get('/login', function (ctx, next) {
-  ctx.body = 'this is a users response!'
+
 })
 
 router.get('/register', async function (ctx, next) {
