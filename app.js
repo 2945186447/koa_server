@@ -11,9 +11,7 @@ import swaggerUi from 'koa2-swagger-ui';
 import path from 'path';
 import fs from 'fs';
 import koaStatic from 'koa-static';
-import koaJwt from "koa-jwt"
 import { getRedisClient } from './utils/redis.js';
-import { jwtExcludePaths, tokenHandler } from './utils/jwt.js'
 
 
 
@@ -120,15 +118,13 @@ app.use(async (ctx, next) => {
   console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
 });
 
-// 对没有验签通过返回的错误进行拦截处理
-app.use(tokenHandler);
-// unless 某些特殊接口不验证toekn 比如登录
-app.use(koaJwt({ secret: process.env.SECRET_KEY }).unless({ path: jwtExcludePaths }));
+
 
 // routes
 app.use(tools.routes(), tools.allowedMethods());
 app.use(index.routes(), index.allowedMethods());
 app.use(users.routes(), users.allowedMethods());
+
 
 // error-handling
 app.on('error', (err, ctx) => {

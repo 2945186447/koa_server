@@ -1,19 +1,18 @@
-import { required } from 'joi';
 import { mongoose } from '../db/index.js';
 
 const userSchema = new mongoose.Schema(
     {
-
-        username: { type: String, required: true },
-        password: { type: String, required: true },
-        gender: { type: Number, required: true },
+        username: { type: String, required: true, unique: true },
     },
     {
-        autoCreate: true,
-        _id: true
+        _id: true,
+        autoIndex: true,
     } // 自动创建集合
 );
 
+
 const User = mongoose.model('User', userSchema);
+
+
 
 export default User;

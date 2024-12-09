@@ -1,7 +1,13 @@
 import Router from 'koa-router';
 const router = new Router();
 
-
+// import { jwtEncrypt, tokenHandler } from "../utils/jwt.js"
+// import koaJwt from "koa-jwt"
+// const jwtExcludePaths = [
+//   '*/*'
+// ];
+// router.use(tokenHandler);
+// router.use(koaJwt({ secret: process.env.SECRET_KEY }).unless({ path: jwtExcludePaths }));
 router.get('/', async (ctx, next) => {
   await ctx.render('index', {
     title: 'Hello Koa 2!'

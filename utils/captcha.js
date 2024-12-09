@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 import { getRedisClient } from './redis.js';
-import { log } from 'console';
 // 获取 Redis 客户端实例
 const client = getRedisClient();
 
