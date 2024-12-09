@@ -3,6 +3,7 @@ import { mongoose } from '../db/index.js';
 const userSchema = new mongoose.Schema(
     {
         username: { type: String, required: true, unique: true },
+        password: { type: String },
     },
     {
         _id: true,
