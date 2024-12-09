@@ -41,11 +41,11 @@ router.get('/register', async function (ctx, next) {
     const res = await validateCaptcha(username, code)
     res && clearCaptcha(username)
     // 插入一条新用户数据
-    await User.create({
+    res && await User.create({
       username,
     });
     return ctx.body = {
-      message: res ? '注册成功' : '验证校验失败',
+      message: res ? '注册成功' : '验证码错误',
       data: null
     }
   } catch (error) {
