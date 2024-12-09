@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
     {
         _id: true,
         autoIndex: true,
+        autoCreate: true,
     } // 自动创建集合
 );
 
